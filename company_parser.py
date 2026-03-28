@@ -1,21 +1,61 @@
-COMPANIES = [
-    {'id': 1, 'name': 'Яндекс', 'employer_id': 1740},
-    {'id': 2, 'name': 'СБЕР', 'employer_id': 3529},
-    {'id': 3, 'name': 'X5 Tech', 'employer_id': 9352463},
-    {'id': 4, 'name': 'Лаборатория Касперского', 'employer_id': 1057},
-    {'id': 5, 'name': 'OZON', 'employer_id': 2180},
-    {'id': 6, 'name': 'МТС', 'employer_id': 3776},
-    {'id': 7, 'name': 'IBS', 'employer_id': 139},
-    {'id': 8, 'name': 'Росатом', 'employer_id': 107434},
-    {'id': 9, 'name': 'КРОК', 'employer_id': 2987},
-    {'id': 10, 'name': 'ООО ИЦ АЙ-ТЕКО', 'employer_id': 872178}
-]
+from typing import Any, Dict, List
 
-url = "https://api.hh.ru/vacancies"
-
-professional_role = [
-        10, 73, 83, 96, 104, 107, 112, 113, 114, 124, 125,
-        148, 150, 156, 157, 158,  160, 164, 165
-    ]
+import requests
 
 
+def get_vacancies(employer_id: int) -> List:
+    """Функция получает на вход ID компании, а возвращает список,
+    определённых доступных вакансий связанных с IT"""
+    all_vacancies = []
+    page = 0
+    per_page = 100
+
+    while True:
+        params: Dict[str, Any] = {
+            "employer_id": employer_id,
+            "professional_role": [
+                10,
+                73,
+                83,
+                96,
+                104,
+                107,
+                112,
+                113,
+                114,
+                124,
+                125,
+                148,
+                150,
+                156,
+                157,
+                158,
+                160,
+                164,
+                165,
+            ],
+            "per_page": per_page,
+            "page": page,
+        }
+        try:
+            response = requests.get("https://api.hh.ru/vacancies", params=params)
+            if response.status_code == 200:
+                data = response.json()
+
+                items = data.get("items", [])
+                all_vacancies.extend(items)
+
+                if len(items) < per_page:
+                    break
+                page += 1
+
+                if page > 20:
+                    break
+            else:
+                print(f"Неожиданный код ответа: {response.status_code}")
+                break
+        except ValueError as e:
+            print(f"Ошибка при разборе JSON ответа: {e}")
+            break
+
+    return all_vacancies
