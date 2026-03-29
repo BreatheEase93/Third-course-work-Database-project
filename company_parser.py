@@ -59,3 +59,15 @@ def get_vacancies(employer_id: int) -> List:
             break
 
     return all_vacancies
+
+
+vacancies = get_vacancies(1740)
+
+print(f"Найдено вакансий: {len(vacancies)}")
+
+print("\nПервые 10 вакансий:")
+for i, vac in enumerate(vacancies[:10], 1):
+    print(f"{i}. {vac.get('name', 'Название не указано')}")
+    print(f"   Зарплата: {vac.get('salary', 'Не указана')}")
+    print(f"   URL: {vac.get('alternate_url', 'Нет ссылки')}")
+    print()

@@ -67,7 +67,8 @@ def create_tables():
                 company_name VARCHAR(50),
                 organization_id INTEGER REFERENCES organization(id) ON DELETE CASCADE,
                 vacancy_name TEXT,
-                salary TEXT,
+                salary FLOAT,
+                currency TEXT,
                 description TEXT,
                 vacancy_url TEXT
             );
