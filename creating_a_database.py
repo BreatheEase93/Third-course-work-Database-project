@@ -1,4 +1,5 @@
 import os
+
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -10,16 +11,16 @@ def create_database():
 
     try:
         conn = psycopg2.connect(
-            dbname='postgres',
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            host=os.getenv('DB_HOST'),
-            port=os.getenv('DB_PORT')
+            dbname="postgres",
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
         cursor = conn.cursor()
-        db_name = os.getenv('DB_NAME')
+        db_name = os.getenv("DB_NAME")
 
         cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'")
         if not cursor.fetchone():
@@ -45,16 +46,16 @@ def create_tables():
 
     try:
         conn = psycopg2.connect(
-            dbname=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            host=os.getenv('DB_HOST'),
-            port=os.getenv('DB_PORT')
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
         )
 
         cursor = conn.cursor()
 
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS organization (
                 id SERIAL PRIMARY KEY,
                 company_name VARCHAR(50) NOT NULL UNIQUE,
@@ -72,7 +73,7 @@ def create_tables():
                 description TEXT,
                 vacancy_url TEXT
             );
-        ''')
+        """)
 
         conn.commit()
         print("Таблицы успешно созданы")
@@ -88,6 +89,7 @@ def create_tables():
             cursor.close()
         if conn:
             conn.close()
+
 
 def init_database():
     """Инициализация базы данных и таблиц"""
