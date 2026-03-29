@@ -90,13 +90,13 @@ class DBManager:
         """Получает среднюю зарплату по вакансиям."""
         query = """
             SELECT 
-                ROUND(AVG(salary), 2) as avg_salary
+                ROUND(AVG(salary)::numeric, 2) as avg_salary
             FROM vacancies
             WHERE salary IS NOT NULL;
         """
 
         result = self._execute_query(query)
-        avg_salary = result[0][0] if result and result[0][0] else 0.0
+        avg_salary = float(result[0][0]) if result and result[0][0] else 0.0
 
         return avg_salary
 
