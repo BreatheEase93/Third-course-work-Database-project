@@ -1,9 +1,10 @@
 from dotenv import load_dotenv
-from company_list import companies
-from company_parser import get_vacancies
-from creating_a_database import init_database
-from DBManager import DBManager
-from filling_the_database import save_vacancies_to_db
+
+from src.api.company_parser import get_vacancies
+from src.company_list import companies
+from src.db.database import init_database
+from src.db.db_manager import DBManager
+from src.db.vacancy_saver import save_vacancies_to_db
 
 load_dotenv(encoding="utf-8")
 
@@ -39,7 +40,7 @@ def main():
         if choice == "0":
             break
 
-        elif choice == "1":
+        if choice == "1":
             init_database()
             print("✓ База данных создана")
 
@@ -68,8 +69,8 @@ def main():
                             else "не указана"
                         )
                         print(
-                            f"{i}. {v['vacancy_name']} ({v['company_name']}) - {salary}"
-                            f" {v['vacancy_url']}"
+                            f"{i}. {v['vacancy_name']} ({v['company_name']}) - "
+                            f"{salary} {v['vacancy_url']}"
                         )
                     if len(data) > 10:
                         print(f"... и еще {len(data) - 10}")
@@ -83,8 +84,8 @@ def main():
                     print(f"\nВакансий с зарплатой выше средней: {len(data)}")
                     for i, v in enumerate(data[:10], 1):
                         print(
-                            f"{i}. {v['vacancy_name']} - {v['salary']} {v['currency']}."
-                            f" {v['vacancy_url']}"
+                            f"{i}. {v['vacancy_name']} - {v['salary']} "
+                            f"{v['currency']}. {v['vacancy_url']}"
                         )
 
                 elif choice == "7":
@@ -94,7 +95,7 @@ def main():
                     for i, v in enumerate(data[:10], 1):
                         print(
                             f"{i}. {v['vacancy_name']} ({v['company_name']}). "
-                            f" {v['vacancy_url']}"
+                            f"{v['vacancy_url']}"
                         )
 
                 db.close()

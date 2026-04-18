@@ -1,4 +1,4 @@
-from srs.utils import salary_format_translation
+from src.utils.utils import salary_format_translation
 
 
 class TestSalaryFormatTranslation:
