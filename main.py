@@ -1,13 +1,12 @@
-import os
 from dotenv import load_dotenv
 
-load_dotenv(encoding='utf-8')
+from src.api.company_parser import get_vacancies
+from src.company_list import companies
+from src.db.database import init_database
+from src.db.db_manager import DBManager
+from src.db.vacancy_saver import save_vacancies_to_db
 
-from creating_a_database import init_database
-from filling_the_database import save_vacancies_to_db
-from company_parser import get_vacancies
-from company_list import companies
-from DBManager import DBManager
+load_dotenv(encoding="utf-8")
 
 
 def load_vacancies():
@@ -16,7 +15,7 @@ def load_vacancies():
     print("Сбор вакансий...")
 
     for company in companies:
-        vacancies = get_vacancies(company['employer_id'])
+        vacancies = get_vacancies(company["employer_id"])
         all_vacancies.extend(vacancies)
         print(f"  {company['name']}: {len(vacancies)} вакансий")
 
@@ -38,53 +37,66 @@ def main():
 
         choice = input("\nВыберите действие: ")
 
-        if choice == '0':
+        if choice == "0":
             break
 
-        elif choice == '1':
+        if choice == "1":
             init_database()
             print("✓ База данных создана")
 
-        elif choice == '2':
+        elif choice == "2":
             vacancies = load_vacancies()
             if vacancies:
                 save_vacancies_to_db(vacancies)
 
-        elif choice in ['3', '4', '5', '6', '7']:
+        elif choice in ["3", "4", "5", "6", "7"]:
             try:
                 db = DBManager()
 
-                if choice == '3':
+                if choice == "3":
                     data = db.get_companies_and_vacancies_count()
                     print("\nКомпании и количество вакансий:")
                     for item in data:
                         print(f"  {item['company_name']}: {item['vacancies_count']}")
 
-                elif choice == '4':
+                elif choice == "4":
                     data = db.get_all_vacancies()
                     print(f"\nВсего вакансий: {len(data)}")
                     for i, v in enumerate(data[:10], 1):
-                        salary = f"{v['salary']} {v['currency']}" if v['salary'] else "не указана"
-                        print(f"{i}. {v['vacancy_name']} ({v['company_name']}) - {salary}.  {v['vacancy_url']}")
+                        salary = (
+                            f"{v['salary']} {v['currency']}"
+                            if v["salary"]
+                            else "не указана"
+                        )
+                        print(
+                            f"{i}. {v['vacancy_name']} ({v['company_name']}) - "
+                            f"{salary} {v['vacancy_url']}"
+                        )
                     if len(data) > 10:
                         print(f"... и еще {len(data) - 10}")
 
-                elif choice == '5':
+                elif choice == "5":
                     avg = db.get_avg_salary()
                     print(f"\nСредняя зарплата: {avg:,.2f} руб.")
 
-                elif choice == '6':
+                elif choice == "6":
                     data = db.get_vacancies_with_higher_salary()
                     print(f"\nВакансий с зарплатой выше средней: {len(data)}")
                     for i, v in enumerate(data[:10], 1):
-                        print(f"{i}. {v['vacancy_name']} - {v['salary']} {v['currency']}.  {v['vacancy_url']}")
+                        print(
+                            f"{i}. {v['vacancy_name']} - {v['salary']} "
+                            f"{v['currency']}. {v['vacancy_url']}"
+                        )
 
-                elif choice == '7':
+                elif choice == "7":
                     keyword = input("Введите ключевое слово: ")
                     data = db.get_vacancies_with_keyword(keyword)
                     print(f"\nНайдено вакансий: {len(data)}")
                     for i, v in enumerate(data[:10], 1):
-                        print(f"{i}. {v['vacancy_name']} ({v['company_name']}).  {v['vacancy_url']}")
+                        print(
+                            f"{i}. {v['vacancy_name']} ({v['company_name']}). "
+                            f"{v['vacancy_url']}"
+                        )
 
                 db.close()
 

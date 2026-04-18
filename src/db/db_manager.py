@@ -1,6 +1,7 @@
 import os
+from typing import Any, Dict, List, Optional
+
 import psycopg2
-from typing import List, Dict, Any, Optional
 
 
 class DBManager:
@@ -15,11 +16,11 @@ class DBManager:
         """Устанавливает соединение с базой данных"""
         try:
             self.conn = psycopg2.connect(
-                dbname=os.getenv('DB_NAME'),
-                user=os.getenv('DB_USER'),
-                password=os.getenv('DB_PASSWORD'),
-                host=os.getenv('DB_HOST'),
-                port=os.getenv('DB_PORT')
+                dbname=os.getenv("DB_NAME"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                host=os.getenv("DB_HOST"),
+                port=os.getenv("DB_PORT"),
             )
         except psycopg2.Error as e:
             print(f"Ошибка подключения к базе данных: {e}")
@@ -43,7 +44,7 @@ class DBManager:
     def get_companies_and_vacancies_count(self) -> List[Dict[str, Any]]:
         """Получает список всех компаний и количество вакансий у каждой компании."""
         query = """
-            SELECT 
+            SELECT
                 o.company_name,
                 COUNT(v.id) as vacancies_count
             FROM organization o
@@ -54,16 +55,13 @@ class DBManager:
 
         result = self._execute_query(query)
 
-        return [
-            {"company_name": row[0], "vacancies_count": row[1]}
-            for row in result
-        ]
+        return [{"company_name": row[0], "vacancies_count": row[1]} for row in result]
 
     def get_all_vacancies(self) -> List[Dict[str, Any]]:
         """Получает список всех вакансий с указанием названия компании,
         названия вакансии, зарплаты и ссылки на вакансию."""
         query = """
-            SELECT 
+            SELECT
                 v.company_name,
                 v.vacancy_name,
                 v.salary,
@@ -81,7 +79,7 @@ class DBManager:
                 "vacancy_name": row[1],
                 "salary": row[2],
                 "currency": row[3],
-                "vacancy_url": row[4]
+                "vacancy_url": row[4],
             }
             for row in result
         ]
@@ -89,7 +87,7 @@ class DBManager:
     def get_avg_salary(self) -> float:
         """Получает среднюю зарплату по вакансиям."""
         query = """
-            SELECT 
+            SELECT
                 ROUND(AVG(salary)::numeric, 2) as avg_salary
             FROM vacancies
             WHERE salary IS NOT NULL;
@@ -101,14 +99,15 @@ class DBManager:
         return avg_salary
 
     def get_vacancies_with_higher_salary(self) -> List[Dict[str, Any]]:
-        """Получает список всех вакансий, у которых зарплата выше средней по всем вакансиям."""
+        """Получает список всех вакансий,
+        у которых зарплата выше средней по всем вакансиям."""
         query = """
             WITH avg_salary_cte AS (
                 SELECT AVG(salary) as avg_salary
                 FROM vacancies
                 WHERE salary IS NOT NULL
             )
-            SELECT 
+            SELECT
                 v.company_name,
                 v.vacancy_name,
                 v.salary,
@@ -128,15 +127,16 @@ class DBManager:
                 "vacancy_name": row[1],
                 "salary": row[2],
                 "currency": row[3],
-                "vacancy_url": row[4]
+                "vacancy_url": row[4],
             }
             for row in result
         ]
 
     def get_vacancies_with_keyword(self, keyword: str) -> List[Dict[str, Any]]:
-        """Получает список всех вакансий, в названии которых содержится переданное слово."""
+        """Получает список всех вакансий,
+        в названии которых содержится переданное слово."""
         query = """
-            SELECT 
+            SELECT
                 v.company_name,
                 v.vacancy_name,
                 v.salary,
@@ -156,7 +156,7 @@ class DBManager:
                 "vacancy_name": row[1],
                 "salary": row[2],
                 "currency": row[3],
-                "vacancy_url": row[4]
+                "vacancy_url": row[4],
             }
             for row in result
         ]
@@ -165,7 +165,6 @@ class DBManager:
         """Закрывает соединение с базой данных"""
         if self.conn:
             self.conn.close()
-
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Автоматическое закрытие соединения при выходе из контекста"""
