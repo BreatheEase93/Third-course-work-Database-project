@@ -3,7 +3,7 @@ from typing import List
 
 import psycopg2
 
-from srs.utils import salary_format_translation
+from src.utils import salary_format_translation
 
 
 def save_vacancies_to_db(vacancies_data: List) -> None:
